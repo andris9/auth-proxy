@@ -24,7 +24,7 @@
 <form action="/webauth-users/new" method="post">
     <div class="form-group">
         <label for="username">Username</label>
-        <input type="text" autocomplete="off" class="form-control {{#if errors.username}}is-invalid{{/if}}" id="username" name="username" placeholder="Enter your username" value="{{form.username}}">
+        <input type="text" autocomplete="off" class="form-control {{#if errors.username}}is-invalid{{/if}}" id="username" name="username" placeholder="Enter username" value="{{form.username}}">
         {{#if errors.username}}
             <div class="invalid-feedback">
                 {{errors.username}}
