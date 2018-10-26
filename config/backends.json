@@ -14,13 +14,5 @@
         "options": {
             "target": "http://127.0.0.1:5060/"
         }
-    },
-
-    {
-        "title": "Testsait nr 3",
-        "url": "/test3/",
-        "options": {
-            "target": "http://127.0.0.1:5060/"
-        }
     }
 ]
