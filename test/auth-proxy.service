@@ -1,0 +1,16 @@
+[Unit]
+Description=Auth Proxy server
+Requires=After=network.target
+
+[Service]
+User=auth-proxy
+Group=auth-proxy
+Environment="NODE_ENV=production"
+WorkingDirectory=/opt/auth-proxy
+ExecStart=/usr/bin/node server.js --config=/etc/auth-proxy/auth-proxy.toml
+Type=simple
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

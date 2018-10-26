@@ -8,6 +8,12 @@ A HTTP proxy that requires authentication.
 $ npm install --production
 ```
 
+## Running
+
+```
+$ node server.js
+```
+
 ## User accounts
 
 User accounts are stored in a json file on disk. File location can be set in the config file. This file must be both readable and writable by the application process.
@@ -57,6 +63,52 @@ Fro example if you want to modify 301 and 302 redirects and also set your own Ho
     "autoRewrite": true
 }
 ```
+
+## Running as systemd service
+
+Assuming you have this application copied to `/opt/auth-proxy`
+
+```
+$ cd /opt/auth-proxy
+$ npm install --production
+```
+
+**Step 1.** Create a proxy user
+
+This would an unprivileged user
+
+```
+$ useradd auth-proxy
+```
+
+**Step 2.** Create a config folder
+
+```
+$ mkdir /etc/auth-proxy
+$ cp config/* /etc/auth-proxy
+$ cp test/users.json /etc/auth-proxy
+$ chown auth-proxy:auth-proxy /etc/auth-proxy/users.json
+```
+
+**Step 3.** Enable nginx virtual host
+
+> **NB!** change the virtual host server name in _test/auth-proxy-nginx.conf_ before actually using it
+
+```
+$ cp test/auth-proxy-nginx.conf /etc/nginx/sites-available/auth-proxy
+$ ln -s /etc/nginx/sites-available/auth-proxy /etc/nginx/sites-enabled/auth-proxy
+$ systemctl reload nginx
+```
+
+**Step 4.** Set up systemd service
+
+```
+$ cp test/auth-proxy.service /etc/systemd/system/auth-proxy.service
+$ systemctl enable auth-proxy
+$ systemctl start auth-proxy
+```
+
+Next open the hostname of the proxy service in your browser
 
 ## License
 
