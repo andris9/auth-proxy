@@ -1,0 +1,57 @@
+<div class="main-header"></div>
+
+<div class="float-right">
+    <a href="/webauth-users/new?t={{time}}" class="btn btn-primary">Add user</a>
+</div>
+
+<h2>Users</h2>
+
+<p class="lead">
+    Manage service users
+</p>
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" href="/webauth-users?t={{time}}">List</a>
+    </li>
+</ul>
+
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>
+                #
+            </th>
+            <th>
+                User
+            </th>
+            <th>
+                Tags
+            </th>
+            <th>
+                &nbsp;
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each users}}
+            <tr>
+                <th>
+                    {{index}}
+                </th>
+                <td>
+                    <strong>{{username}}</strong>
+                </td>
+                <td>
+                    {{#each tags}}
+                        <span class="badge badge-primary">{{this}}</span>
+                    {{/each}}
+                </td>
+                <td class="text-right">
+                    <a href="/webauth-users/edit?username={{username}}&amp;t={{../time}}">Edit</a>
+                </td>
+            </tr>
+        {{/each}}
+    </tbody>
+</table>

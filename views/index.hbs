@@ -1,0 +1,34 @@
+{{#if user}}
+
+    <h2 class="main-header">Backends</h2>
+
+    <p class="lead">
+        Select backend to continue to
+    </p>
+
+    <table class="table">
+        {{#each backends}}
+            <tr>
+                <td>
+                    <a href="{{url}}">{{title}}</a>
+                </td>
+                <td class="text-right">
+                    {{#if description}}<span class="text-muted">{{description}}</span>{{else}}&nbsp;{{/if}}
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+
+
+{{else}}
+
+    <h2 class="main-header">WebAuth Gateway</h2>
+    <p class="lead">
+        Application gateway
+    </p>
+
+    <p>
+        Please <mark><a href="/webauth-login?t={{time}}">log in</a></mark> first to access any backends.
+    </p>
+
+{{/if}}

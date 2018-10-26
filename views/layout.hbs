@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>WebAuth Gateway</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/webauth-css/bootstrap.min.css?t={{time}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/webauth-css/custom.css?t={{time}}" rel="stylesheet">
+
+    <script src="/webauth-js/jquery-3.3.1.slim.min.js?t={{time}}"></script>
+    <script src="/webauth-js/popper.min.js?t={{time}}"></script>
+    <script src="/webauth-js/bootstrap.min.js?t={{time}}"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/?t={{time}}">WebAuth</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+
+                    {{#each menuItems}}
+                        <a class="nav-item nav-link {{#if active}}active{{/if}}" href="{{url}}?t={{../time}}">{{title}}{{#if active}} <span class="sr-only">(current)</span>{{/if}}</a>
+                    {{/each}}
+
+                </div>
+            </div>
+        </nav>
+
+        {{#if error}}
+            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                {{#if error.title}}
+                    <strong>{{error.title}}</strong>
+                {{/if}}
+                {{error.message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        {{/if}}
+
+        {{{body}}}
+    </div>
+</body>
+
+</html>
