@@ -251,7 +251,6 @@ webapp.use(
 );
 
 webapp.use((req, res, next) => {
-    console.log(req.body, req.csrfToken);
     if (req.method === 'POST' && (!req.body._csrf || req.body._csrf !== req.csrfToken)) {
         req.showError = {
             message: 'Invalid CSRF token, please refresh page and try again',
