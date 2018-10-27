@@ -2,6 +2,8 @@
 
 A HTTP proxy that requires authentication before allowing requests through.
 
+[Inteface screenshots](https://cloudup.com/cU0jWGvAfit)
+
 ## Installation
 
 ```
