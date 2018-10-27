@@ -845,9 +845,6 @@ const server = http.createServer((req, res) => {
 
     let target = backend.options;
 
-    target.xfwd = true;
-    target.toProxy = true;
-
     req.headers.cookie = filterCookies(req.headers.cookie, [config.www.cookieName, config.www.csrfCookie]);
 
     proxy.web(req, res, target);
