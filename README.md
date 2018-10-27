@@ -110,6 +110,10 @@ $ systemctl start auth-proxy
 
 Next open the hostname of the proxy service in your browser
 
+## Update
+
+Just replace the files in _/opt/auth-proxy_. If you are using configuration from _/etc/auth-proxy_ then replacing application files should not mess with your existing setup.
+
 ## License
 
 **ISC**
