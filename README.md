@@ -89,18 +89,21 @@ $ useradd auth-proxy
 $ mkdir /etc/auth-proxy
 $ cp config/* /etc/auth-proxy
 $ cp test/users.json /etc/auth-proxy
+$ mv /etc/auth-proxy/default.toml /etc/auth-proxy/auth-proxy.toml
 $ chown auth-proxy:auth-proxy /etc/auth-proxy/users.json
 ```
 
-**Step 3.** Enable nginx virtual host
+> **NB!** edit _etc/auth-proxy/auth-proxy.toml_ and set user db location to `"/etc/auth-proxy/users.json"`
 
-> **NB!** change the virtual host server name in _test/auth-proxy-nginx.conf_ before actually using it
+**Step 3.** Enable nginx virtual host
 
 ```
 $ cp test/auth-proxy-nginx.conf /etc/nginx/sites-available/auth-proxy
 $ ln -s /etc/nginx/sites-available/auth-proxy /etc/nginx/sites-enabled/auth-proxy
 $ systemctl reload nginx
 ```
+
+> **NB!** change the virtual host server name in _/etc/nginx/sites-enabled/auth-proxy_ before actually using it
 
 **Step 4.** Set up systemd service
 
