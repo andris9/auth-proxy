@@ -117,7 +117,7 @@ const userStorage = {
         }
 
         let salt = crypto.randomBytes(16);
-        userData.password = '$pbkdf$' + salt.toString('hex') + '$' + crypto.pbkdf2Sync(userData.password, salt, 100000, 64, 'sha512');
+        userData.password = '$pbkdf$' + salt.toString('hex') + '$' + crypto.pbkdf2Sync(userData.password, salt, 100000, 64, 'sha512').toString('base64');
 
         db[username] = userData;
 
@@ -167,6 +167,18 @@ webapp.set('view engine', 'hbs');
 webapp.use(express.static(__dirname + '/public'));
 
 webapp.use((req, res, next) => {
+    if (!req.cookies[config.www.csrfCookie]) {
+        let csrfToken = crypto
+            .randomBytes(16)
+            .toString('base64')
+            .replace(/[=]/g, '');
+        req.cookies[config.www.csrfCookie] = csrfToken;
+        res.set({
+            'set-cookie': encodeURIComponent(config.www.csrfCookie) + '=' + encodeURIComponent(csrfToken) + '; Path=/; HttpOnly'
+        });
+    }
+    req.csrfToken = res.locals._csrf = req.cookies[config.www.csrfCookie];
+
     if (typeof req.cookies[config.www.cookieName] === 'string') {
         let clearCookie = true;
         if (sessions.has(req.cookies[config.www.cookieName])) {
@@ -210,6 +222,11 @@ webapp.use((req, res, next) => {
             });
         }
         menuItems.push({
+            key: 'profile',
+            title: 'Profile',
+            url: '/webauth-users/profile'
+        });
+        menuItems.push({
             key: 'logout',
             title: 'Log out',
             url: '/webauth-logout'
@@ -233,10 +250,20 @@ webapp.use(
 );
 
 webapp.use((req, res, next) => {
+    if (req.method === 'post' && (!req.body.csrfToken || req.body.csrfToken !== req.csrfToken)) {
+        req.showError = {
+            message: 'Invalid CSRF token, please refresh page and try again',
+            statusCode: 403
+        };
+    }
+    next();
+});
+
+webapp.use((req, res, next) => {
     if (req.showError) {
-        res.status(500);
+        res.status(req.showError.statusCode || 500);
         res.render('errormessage', {
-            code: 500,
+            code: req.showError.statusCode || 500,
             message: req.showError.message || req.showError
         });
         return;
@@ -568,6 +595,93 @@ webapp.post('/webauth-users/new', (req, res) => {
     res.redirect('/webauth-users?t=' + Date.now());
 });
 
+webapp.use('/webauth-users/profile', (req, res, next) => {
+    if (!req.user) {
+        return res.redirect('/?t=' + Date.now());
+    }
+
+    req.setActiveMenu('profile');
+    next();
+});
+
+webapp.get('/webauth-users/profile', (req, res) => {
+    res.render('users-profile', {
+        form: req.user
+    });
+});
+
+webapp.post('/webauth-users/profile', (req, res) => {
+    const schema = Joi.object().keys({
+        username: Joi.string()
+            .trim()
+            .max(256)
+            .label('Username')
+            .allow([req.user.username])
+            .required(),
+        password: Joi.string()
+            .empty('')
+            .max(256)
+            .label('Password'),
+        password2: Joi.string()
+            .empty('')
+            .max(256)
+            .label('Password repeat')
+    });
+
+    const validation = Joi.validate(req.body, schema, {
+        abortEarly: false,
+        convert: true,
+        stripUnknown: true
+    });
+
+    let sendError = error => {
+        res.render('users-profile', {
+            error,
+            form: validation.value,
+            errors: error.errors || {}
+        });
+    };
+
+    if (validation.error) {
+        let errors = {};
+
+        validation.error.details.forEach(detail => {
+            errors[detail.context.key] = detail.message;
+        });
+
+        return sendError({
+            title: 'Error',
+            message: 'Input validation failed',
+            errors
+        });
+    }
+
+    if (validation.value.password && validation.value.password !== validation.value.password2) {
+        return sendError({
+            title: 'Error',
+            message: 'Input validation failed',
+            errors: {
+                password: 'Passwords do not match'
+            }
+        });
+    }
+
+    let existingData = userStorage.get(validation.value.username);
+    if (!existingData) {
+        res.status(404);
+        res.render('notfound');
+        return;
+    }
+
+    if (validation.value.password) {
+        existingData.password = validation.value.password;
+    }
+
+    userStorage.update(validation.value.username, existingData);
+
+    res.redirect('/webauth-users/profile?t=' + Date.now());
+});
+
 webapp.use('/webauth-users', (req, res, next) => {
     if (!req.user || !req.user.tags.includes('admin')) {
         return res.redirect('/?t=' + Date.now());
@@ -649,7 +763,7 @@ webapp.post('/webauth-login', (req, res) => {
     sessions.set(session.id, session);
 
     res.set({
-        'set-cookie': encodeURIComponent(config.www.cookieName) + '=' + encodeURIComponent(session.id) + '; Path=/'
+        'set-cookie': encodeURIComponent(config.www.cookieName) + '=' + encodeURIComponent(session.id) + '; Path=/; HttpOnly'
     });
 
     res.redirect('/?t=' + Date.now());
@@ -658,7 +772,11 @@ webapp.post('/webauth-login', (req, res) => {
 webapp.get('/', (req, res) => {
     req.setActiveMenu('home');
     res.render('index', {
-        backends: config.backends
+        backends: [].concat(config.backends || []).map((backend, i) => {
+            backend = JSON.parse(JSON.stringify(backend));
+            backend.index = i + 1;
+            return backend;
+        })
     });
 });
 
@@ -700,8 +818,7 @@ const server = http.createServer((req, res) => {
     target.xfwd = true;
     target.toProxy = true;
 
-    delete req.cookies[config.www.cookieName];
-    req.headers.cookie = filterCookies(req.headers.cookie, config.www.cookieName);
+    req.headers.cookie = filterCookies(req.headers.cookie, [config.www.cookieName, config.www.csrfCookie]);
 
     proxy.web(req, res, target);
 

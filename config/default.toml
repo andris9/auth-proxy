@@ -4,6 +4,7 @@
     postsize = "5MB"
 
     cookieName = "AUTH_PROXY_SESS"
+    csrfCookie = "AUTH_PROXY_CSRF"
 
 [users]
 # must be readable/writable by application

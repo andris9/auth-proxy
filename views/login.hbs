@@ -1,6 +1,7 @@
 <h2 class="main-header">Log in</h2>
 
 <form action="/webauth-login" method="post">
+    <input type="hidden" name="_csrf" value="{{_csrf}}" />
     <div class="form-group">
         <label for="username">Username</label>
         <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" value="{{form.username}}">

@@ -9,8 +9,11 @@
     <table class="table">
         {{#each backends}}
             <tr>
+                <th>
+                    {{index}}
+                </th>
                 <td>
-                    <a href="{{url}}">{{title}}</a>
+                    <a href="{{url}}" target="_blank">{{title}}</a>
                 </td>
                 <td class="text-right">
                     {{#if description}}<span class="text-muted">{{description}}</span>{{else}}&nbsp;{{/if}}
