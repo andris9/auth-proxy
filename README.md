@@ -113,7 +113,7 @@ $ systemctl enable auth-proxy
 $ systemctl start auth-proxy
 ```
 
-Next open the hostname of the proxy service in your browser
+Next open the hostname of the proxy service in your browser. Default username is "admin" and password is "admin" (or whatever you have set in the users config file).
 
 ## Update
 
