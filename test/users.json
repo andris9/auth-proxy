@@ -1,17 +1,7 @@
 {
     "admin": {
         "enabled": true,
-        "tags": [
-            "admin",
-            "test"
-        ],
+        "tags": ["admin", "test"],
         "password": "admin"
-    },
-    "guest": {
-        "enabled": true,
-        "tags": [
-            "test"
-        ],
-        "password": "$pbkdf$dde463414b39f7748922cd2cad4e6f98$wYW35LiccoffRUG9geDlYQYx+aPhTuC6RglHj5Cv1HAEQbO1j2AVRgY7fcssL0JyU4fpGTQWE/fJaohPhhUFPw=="
     }
 }

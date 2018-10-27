@@ -37,12 +37,22 @@
             </div>
         </nav>
 
-        {{#if error}}
+        {{#if error.message}}
             <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                 {{#if error.title}}
                     <strong>{{error.title}}</strong>
                 {{/if}}
                 {{error.message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        {{/if}}
+
+        {{#if success.message}}
+            <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                {{#if success.title}}
+                    <strong>{{success.title}}</strong>
+                {{/if}}
+                {{success.message}}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
         {{/if}}

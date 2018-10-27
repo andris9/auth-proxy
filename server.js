@@ -189,6 +189,7 @@ webapp.use((req, res, next) => {
                 userData.tags = [].concat(userData.tags || []);
                 req.user = res.locals.user = userData;
                 clearCookie = false;
+                req.session = session;
             }
         }
         if (clearCookie) {
@@ -250,7 +251,8 @@ webapp.use(
 );
 
 webapp.use((req, res, next) => {
-    if (req.method === 'post' && (!req.body.csrfToken || req.body.csrfToken !== req.csrfToken)) {
+    console.log(req.body, req.csrfToken);
+    if (req.method === 'POST' && (!req.body._csrf || req.body._csrf !== req.csrfToken)) {
         req.showError = {
             message: 'Invalid CSRF token, please refresh page and try again',
             statusCode: 403
@@ -268,6 +270,24 @@ webapp.use((req, res, next) => {
         });
         return;
     }
+
+    req.flash = (level, title, message) => {
+        if (!req.session) {
+            return;
+        }
+        req.session[level] = {
+            title,
+            message
+        };
+    };
+
+    if (req.session && req.method === 'GET') {
+        res.locals.error = req.session.error;
+        res.locals.success = req.session.success;
+        req.session.error = {};
+        req.session.success = {};
+    }
+
     next();
 });
 
@@ -283,6 +303,7 @@ webapp.get('/webauth-logout', (req, res) => {
 
 webapp.use('/webauth-users/delete', (req, res, next) => {
     if (!req.user || !req.user.tags.includes('admin')) {
+        req.flash('error', 'Invalid permissions.', 'You do not have permissions to access restricted content');
         return res.redirect('/?t=' + Date.now());
     }
 
@@ -334,11 +355,13 @@ webapp.post('/webauth-users/delete', (req, res) => {
 
     userStorage.delete(validation.value.username);
 
+    req.flash('success', 'Success!', validation.value.username + ' was deleted from user storage');
     res.redirect('/webauth-users?t=' + Date.now());
 });
 
 webapp.use('/webauth-users/edit', (req, res, next) => {
     if (!req.user || !req.user.tags.includes('admin')) {
+        req.flash('error', 'Invalid permissions.', 'You do not have permissions to access restricted content');
         return res.redirect('/?t=' + Date.now());
     }
 
@@ -362,6 +385,7 @@ webapp.get('/webauth-users/edit', (req, res) => {
     });
 
     if (validation.error) {
+        req.flash('error', 'Input fail.', 'Failed to validate input');
         return res.redirect('/webauth-users?t=' + Date.now());
     }
 
@@ -488,11 +512,13 @@ webapp.post('/webauth-users/edit', (req, res) => {
 
     userStorage.update(validation.value.username, userData);
 
+    req.flash('success', 'Success!', validation.value.username + ' was updated');
     res.redirect('/webauth-users?t=' + Date.now());
 });
 
 webapp.use('/webauth-users/new', (req, res, next) => {
     if (!req.user || !req.user.tags.includes('admin')) {
+        req.flash('error', 'Invalid permissions.', 'You do not have permissions to access restricted content');
         return res.redirect('/?t=' + Date.now());
     }
 
@@ -592,6 +618,7 @@ webapp.post('/webauth-users/new', (req, res) => {
 
     userStorage.create(validation.value.username, userData);
 
+    req.flash('success', 'Success!', validation.value.username + ' was created');
     res.redirect('/webauth-users?t=' + Date.now());
 });
 
@@ -679,11 +706,13 @@ webapp.post('/webauth-users/profile', (req, res) => {
 
     userStorage.update(validation.value.username, existingData);
 
+    req.flash('success', 'Success!', 'Profile settings were updated');
     res.redirect('/webauth-users/profile?t=' + Date.now());
 });
 
 webapp.use('/webauth-users', (req, res, next) => {
     if (!req.user || !req.user.tags.includes('admin')) {
+        req.flash('error', 'Invalid permissions.', 'You do not have permissions to access restricted content');
         return res.redirect('/?t=' + Date.now());
     }
 
@@ -757,7 +786,9 @@ webapp.post('/webauth-login', (req, res) => {
 
     let session = {
         id: crypto.randomBytes(20).toString('hex'),
-        username
+        username,
+        error: {},
+        success: {}
     };
 
     sessions.set(session.id, session);
