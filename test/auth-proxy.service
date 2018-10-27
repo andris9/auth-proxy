@@ -8,6 +8,8 @@ Group=auth-proxy
 Environment="NODE_ENV=production"
 WorkingDirectory=/opt/auth-proxy
 ExecStart=/usr/bin/node server.js --config=/etc/auth-proxy/auth-proxy.toml
+ExecReload=/bin/kill -HUP $MAINPID
+SyslogIdentifier=auth-proxy
 Type=simple
 Restart=always
 RestartSec=10

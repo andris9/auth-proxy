@@ -119,6 +119,14 @@ Next open the hostname of the proxy service in your browser. Default username is
 
 Just replace the files in _/opt/auth-proxy_. If you are using configuration from _/etc/auth-proxy_ then replacing application files should not mess with your existing setup.
 
+## Changing user database manually
+
+If you have changed user database file, then you can force reload of changes
+
+```
+$ systemctl reload auth-proxy
+```
+
 ## License
 
 **ISC**

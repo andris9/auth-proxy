@@ -19,17 +19,21 @@ const userStorage = {
         try {
             db = fs.readFileSync(config.users.db, 'utf-8');
         } catch (err) {
-            console.error('Failed to load database file');
-            console.error(err.message);
-            process.exit(1);
+            let newErr = new Error('Failed to load database file (diagnostics code: ' + err.code + ')');
+            newErr.code = err.code;
+            console.error(newErr.message);
+            console.error(err);
+            throw newErr;
         }
 
         try {
             db = JSON.parse(db);
         } catch (err) {
-            console.error('Invalid database file, please fix manually');
-            console.error(err.message);
-            process.exit(1);
+            let newErr = new Error('Invalid database file, please fix manually');
+            newErr.code = err.code;
+            console.error(newErr.message);
+            console.error(err);
+            throw newErr;
         }
 
         this.db = db;
@@ -146,6 +150,16 @@ const userStorage = {
         this.save(db);
     }
 };
+
+config.on('reload', () => {
+    try {
+        userStorage.load();
+        console.log('User database reloaded from disk');
+    } catch (err) {
+        console.error('Failed to reload user database from disk');
+        console.error(err);
+    }
+});
 
 //
 // Create a proxy server with custom application logic
@@ -925,6 +939,11 @@ function getCookies(cookieHeader) {
 
     return cookies;
 }
+
+process.title = 'auth-proxy';
+
+// Try to load user database. Might throw
+userStorage.load();
 
 server.listen(config.www.port, () => {
     console.log('Server listening on port %s', config.www.port);
