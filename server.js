@@ -117,7 +117,7 @@ const userStorage = {
         }
 
         let salt = crypto.randomBytes(16);
-        userData.password = '$pbkdf$' + salt.toString('hex') + '$' + crypto.pbkdf2Sync(userData.password, salt, 100000, 64, 'sha512').toString('base64');
+        userData.password = '$pbkdf$' + salt.toString('base64') + '$' + crypto.pbkdf2Sync(userData.password, salt, 100000, 64, 'sha512').toString('base64');
 
         db[username] = userData;
 
