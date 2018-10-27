@@ -93,7 +93,7 @@ $ mv /etc/auth-proxy/default.toml /etc/auth-proxy/auth-proxy.toml
 $ chown auth-proxy:auth-proxy /etc/auth-proxy/users.json
 ```
 
-> **NB!** edit _etc/auth-proxy/auth-proxy.toml_ and set user db location to `"/etc/auth-proxy/users.json"`
+> **NB!** edit _/etc/auth-proxy/auth-proxy.toml_ and set user db location to `"/etc/auth-proxy/users.json"`
 
 **Step 3.** Enable nginx virtual host
 
