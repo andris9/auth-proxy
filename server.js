@@ -105,7 +105,7 @@ const userStorage = {
         } catch (err) {
             console.error('Failed to save database file');
             console.error(err.message);
-            throw new Error('Failed to save database file');
+            throw new Error('Failed to save database file (diagnostics code: ' + err.code + ')');
         }
         this.db = db;
     },
@@ -509,9 +509,14 @@ webapp.post('/webauth-users/edit', (req, res) => {
         userData.password = existingData.password;
     }
 
-    userStorage.update(validation.value.username, userData);
+    try {
+        userStorage.update(validation.value.username, userData);
+        req.flash('success', 'Success!', validation.value.username + ' was updated');
+    } catch (err) {
+        req.flash('error', 'Error!', err.message);
+        return res.redirect('/webauth-users/edit?username=' + encodeURIComponent(validation.value.username) + '&t=' + Date.now());
+    }
 
-    req.flash('success', 'Success!', validation.value.username + ' was updated');
     res.redirect('/webauth-users?t=' + Date.now());
 });
 
@@ -615,9 +620,14 @@ webapp.post('/webauth-users/new', (req, res) => {
         password: validation.value.password
     };
 
-    userStorage.create(validation.value.username, userData);
+    try {
+        userStorage.create(validation.value.username, userData);
+        req.flash('success', 'Success!', validation.value.username + ' was created');
+    } catch (err) {
+        req.flash('error', 'Error!', err.message);
+        return res.redirect('/webauth-users/new?t=' + Date.now());
+    }
 
-    req.flash('success', 'Success!', validation.value.username + ' was created');
     res.redirect('/webauth-users?t=' + Date.now());
 });
 
@@ -703,9 +713,13 @@ webapp.post('/webauth-users/profile', (req, res) => {
         existingData.password = validation.value.password;
     }
 
-    userStorage.update(validation.value.username, existingData);
+    try {
+        userStorage.update(validation.value.username, existingData);
+        req.flash('success', 'Success!', 'Profile settings were updated');
+    } catch (err) {
+        req.flash('error', 'Error!', err.message);
+    }
 
-    req.flash('success', 'Success!', 'Profile settings were updated');
     res.redirect('/webauth-users/profile?t=' + Date.now());
 });
 
