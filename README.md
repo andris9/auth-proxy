@@ -52,9 +52,9 @@ Backends are listed in the backends json file (must be readable by the applicati
 -   **title** is the backend title. This field should be set as it is the link text in backend listing
 -   **description** is an optional description text
 -   **url** is the URL prefix for that backend, it should start and end with a slash. If the value is "/test/", then the backend is available from `http://proxyhostname/test/`
--   **options** is the proxy configuration, see all avialble options [here](https://www.npmjs.com/package/http-proxy#options). In most cases you probably want to set these.
+-   **options** is the proxy configuration, see all available options [here](https://www.npmjs.com/package/http-proxy#user-content-options). In most cases you probably want to set these. It should be possible to use all options except `buffer`.
 
-For example if you want to modify 301 and 302 redirects and also set your own Host: header, then the options object could look like this:
+For example if you want to modify 301 and 302 redirects and also set your own `Host:` header, then the options object could look like this:
 
 ```json
 {
@@ -125,13 +125,15 @@ Once application files are replaced, restart the service
 $ systemctl restart auth-proxy
 ```
 
-## Changing user database manually
+## Changing user database or backend manually
 
-If you have changed user database file, then you can force reload of changes
+If you have changed user database or backends file, then you can force reload of changes
 
 ```
 $ systemctl reload auth-proxy
 ```
+
+Reloading the service instead of restarting it prevents killing all existing user sessions as WebAuth stores session information for logged in users in memory.
 
 ## License
 
