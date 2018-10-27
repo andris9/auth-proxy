@@ -1,7 +1,8 @@
 {
     "name": "auth-proxy",
+    "private": true,
     "version": "1.0.0",
-    "description": "Authentication proxy",
+    "description": "HTTP proxy that requires authentication before allowing requests through.",
     "main": "index.js",
     "scripts": {
         "test": "grunt",

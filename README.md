@@ -1,6 +1,6 @@
 # WebAuth
 
-A HTTP proxy that requires authentication before allowing requests through.
+HTTP proxy that requires authentication before allowing requests to reach backends.
 
 [Inteface screenshots](https://cloudup.com/cU0jWGvAfit)
 
