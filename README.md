@@ -1,6 +1,6 @@
-# Auth Proxy
+# WebAuth
 
-A HTTP proxy that requires authentication.
+A HTTP proxy that requires authentication before allowing requests through.
 
 ## Installation
 
@@ -34,13 +34,13 @@ Users with the `admin` tag can add and modify other users. Non-admin users can o
 
 ## Backends
 
-Backends are listed in the backends json file (can be only readable by the application process).
+Backends are listed in the backends json file (must be readable by the application process).
 
 ```json
 {
-    "title": "Test",
-    "description": "Proovin lihtsalt niisama",
-    "url": "/test1/",
+    "title": "WordPress",
+    "description": "Hidden WordPress instance",
+    "url": "/wordpress/",
     "options": {
         "target": "http://127.0.0.1:5060/"
     }
@@ -49,10 +49,10 @@ Backends are listed in the backends json file (can be only readable by the appli
 
 -   **title** is the backend title. This field should be set as it is the link text in backend listing
 -   **description** is an optional description text
--   **url** is the URL prefix for that backend, it should start and end with a slash. If the value is "/test1/", then the backend is available from `http://proxyhostname/test1/`
--   **options** is the proxy configuration, see all avialble options [here](https://www.npmjs.com/package/http-proxy#options)
+-   **url** is the URL prefix for that backend, it should start and end with a slash. If the value is "/test/", then the backend is available from `http://proxyhostname/test/`
+-   **options** is the proxy configuration, see all avialble options [here](https://www.npmjs.com/package/http-proxy#options). In most cases you probably want to set these.
 
-Fro example if you want to modify 301 and 302 redirects and also set your own Host: header, then the options objec could look like this:
+For example if you want to modify 301 and 302 redirects and also set your own Host: header, then the options object could look like this:
 
 ```json
 {
@@ -75,7 +75,7 @@ $ npm install --production
 
 **Step 1.** Create a proxy user
 
-This would an unprivileged user
+This would be an unprivileged user
 
 ```
 $ useradd auth-proxy
